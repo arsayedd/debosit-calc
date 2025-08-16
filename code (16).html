@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شيت إدارة الديبوزيت</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e6b30 0%, #0d4f1a 100%);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e6b30 0%, #0d4f1a 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .date-controls {
+            background: #f0f8f0;
+            padding: 20px;
+            border-bottom: 2px solid #d4edda;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .date-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .current-date {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f0f8f0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card.orders { border-left-color: #155724; }
+        .stat-card.total { border-left-color: #28a745; }
+        .stat-card.deposits { border-left-color: #1e6b30; }
+        .stat-card.remaining { border-left-color: #0d4f1a; }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #155724;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .form-section {
+            padding: 30px;
+            background: white;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #155724;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px;
+            border: 2px solid #d4edda;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #28a745;
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1e6b30 0%, #0d4f1a 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #1e6b30 0%, #fd7e14 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #0d4f1a 0%, #e83e8c 100%);
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #155724 0%, #1e6b30 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .table-section {
+            padding: 30px;
+            background: white;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th {
+            background: linear-gradient(135deg, #1e6b30 0%, #0d4f1a 100%);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #d4edda;
+        }
+
+        tr:nth-child(even) {
+            background: #f0f8f0;
+        }
+
+        tr:hover {
+            background: #d4edda;
+        }
+
+        .payment-method {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .vodafone { background: #e74c3c; }
+        .instapay { background: #1e6b30; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            direction: rtl;
+        }
+
+        .close {
+            color: #aaa;
+            float: left;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .history-item {
+            background: #f0f8f0;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-right: 5px solid #1e6b30;
+        }
+
+        .history-date {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #155724;
+            margin-bottom: 10px;
+        }
+
+        .history-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .history-stat {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            border: 1px solid #d4edda;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                padding: 20px;
+            }
+            
+            .date-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .date-section {
+                justify-content: center;
+            }
+
+            th, td {
+                padding: 8px;
+                font-size: 14px;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 4em;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+
+        .alert {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📊 شيت إدارة الديبوزيت</h1>
+            <p>نظام شامل لإدارة الطلبات والدفعات المقدمة</p>
+        </div>
+
+        <!-- Date Controls -->
+        <div class="date-controls">
+            <div class="date-section">
+                <label for="selectedDate"><strong>اختيار التاريخ:</strong></label>
+                <input type="date" id="selectedDate" class="btn">
+                <div class="current-date">
+                    التاريخ الحالي: <span id="currentDateDisplay"></span>
+                </div>
+            </div>
+            <div class="date-section">
+                <button class="btn btn-info" onclick="showHistory()">📜 عرض التاريخ</button>
+                <button class="btn btn-warning" onclick="exportData()">📁 تصدير البيانات</button>
+                <button class="btn btn-success" onclick="printReport()">🖨️ طباعة التقرير</button>
+            </div>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alertMessage"></div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card orders">
+                <div class="stat-number" id="totalOrders">0</div>
+                <div class="stat-label">إجمالي الطلبات</div>
+            </div>
+            <div class="stat-card total">
+                <div class="stat-number" id="totalValue">0</div>
+                <div class="stat-label">إجمالي قيمة الأوردرات</div>
+            </div>
+            <div class="stat-card deposits">
+                <div class="stat-number" id="totalDeposits">0</div>
+                <div class="stat-label">إجمالي الدفعات المقدمة</div>
+            </div>
+            <div class="stat-card remaining">
+                <div class="stat-number" id="totalRemaining">0</div>
+                <div class="stat-label">المبلغ المتبقي</div>
+            </div>
+        </div>
+
+        <!-- Form Section -->
+        <div class="form-section">
+            <h2 style="margin-bottom: 20px; color: #155724;">➕ إضافة طلب جديد</h2>
+            <form id="orderForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="orderCode">كود الأوردر على السيستم *</label>
+                        <input type="text" id="orderCode" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customerName">اسم العميل *</label>
+                        <input type="text" id="customerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phoneNumber">رقم التليفون *</label>
+                        <input type="tel" id="phoneNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="orderValue">قيمة الأوردر *</label>
+                        <input type="number" id="orderValue" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="depositValue">قيمة الديبوزيت *</label>
+                        <input type="number" id="depositValue" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="paymentMethod">طريقة الدفع *</label>
+                        <select id="paymentMethod" required>
+                            <option value="">اختر طريقة الدفع</option>
+                            <option value="vodafone">فودافون كاش</option>
+                            <option value="instapay">انستا باي</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="fromNumber">الرقم المحول منه *</label>
+                        <input type="tel" id="fromNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="toNumber">الرقم المحول إليه *</label>
+                        <input type="tel" id="toNumber" required>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary">✅ إضافة الطلب</button>
+                    <button type="button" class="btn btn-warning" onclick="clearForm()">🔄 مسح النموذج</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Table Section -->
+        <div class="table-section">
+            <h2 style="margin-bottom: 20px; color: #155724;">📋 جدول الطلبات</h2>
+            <div class="table-container">
+                <table id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>كود الأوردر</th>
+                            <th>اسم العميل</th>
+                            <th>رقم التليفون</th>
+                            <th>قيمة الأوردر</th>
+                            <th>قيمة الديبوزيت</th>
+                            <th>المبلغ المتبقي</th>
+                            <th>طريقة الدفع</th>
+                            <th>الرقم المحول منه</th>
+                            <th>الرقم المحول إليه</th>
+                            <th>تاريخ الإضافة</th>
+                            <th>وقت الإضافة</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <tr>
+                            <td colspan="12" class="empty-state">
+                                <div style="font-size: 3em; margin-bottom: 20px;">📝</div>
+                                <h3>لا توجد طلبات بعد</h3>
+                                <p>ابدأ بإضافة أول طلب من النموذج أعلاه</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div id="historyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeHistory()">&times;</span>
+            <h2 style="color: #155724; margin-bottom: 20px;">📜 تاريخ البيانات المحفوظة</h2>
+            <div style="margin-bottom: 20px;">
+                <button class="btn btn-danger" onclick="clearAllHistory()">🗑️ مسح جميع البيانات</button>
+            </div>
+            <div id="historyContent">
+                <div class="empty-state">
+                    <div style="font-size: 3em; margin-bottom: 20px;">📅</div>
+                    <h3>لا توجد بيانات محفوظة</h3>
+                    <p>ابدأ بإضافة بعض الطلبات وسيتم حفظها تلقائياً</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let orders = [];
+        let currentDate = new Date().toISOString().split('T')[0];
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('selectedDate').value = currentDate;
+            updateCurrentDateDisplay();
+            loadOrdersForDate(currentDate);
+            
+            // Event listeners
+            document.getElementById('selectedDate').addEventListener('change', function() {
+                currentDate = this.value;
+                updateCurrentDateDisplay();
+                loadOrdersForDate(currentDate);
+            });
+
+            document.getElementById('orderForm').addEventListener('submit', addOrder);
+        });
+
+        function updateCurrentDateDisplay() {
+            const dateObj = new Date(currentDate + 'T00:00:00');
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                weekday: 'long'
+            };
+            document.getElementById('currentDateDisplay').textContent = 
+                dateObj.toLocaleDateString('ar-EG', options);
+        }
+
+        function loadOrdersForDate(date) {
+            const savedOrders = localStorage.getItem(`orders_${date}`);
+            orders = savedOrders ? JSON.parse(savedOrders) : [];
+            updateTable();
+            updateStatistics();
+        }
+
+        function saveOrdersForDate(date) {
+            localStorage.setItem(`orders_${date}`, JSON.stringify(orders));
+        }
+
+        function addOrder(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const orderData = {
+                id: Date.now(),
+                orderCode: document.getElementById('orderCode').value,
+                customerName: document.getElementById('customerName').value,
+                phoneNumber: document.getElementById('phoneNumber').value,
+                orderValue: parseFloat(document.getElementById('orderValue').value),
+                depositValue: parseFloat(document.getElementById('depositValue').value),
+                paymentMethod: document.getElementById('paymentMethod').value,
+                fromNumber: document.getElementById('fromNumber').value,
+                toNumber: document.getElementById('toNumber').value,
+                addedDate: currentDate,
+                addedTime: new Date().toLocaleTimeString('ar-EG')
+            };
+
+            // Validation
+            if (orderData.depositValue > orderData.orderValue) {
+                showAlert('قيمة الديبوزيت لا يمكن أن تكون أكبر من قيمة الأوردر!', 'error');
+                return;
+            }
+
+            // Check if order code already exists
+            if (orders.find(order => order.orderCode === orderData.orderCode)) {
+                showAlert('كود الأوردر موجود بالفعل!', 'error');
+                return;
+            }
+
+            // Add order
+            orders.push(orderData);
+            saveOrdersForDate(currentDate);
+            updateTable();
+            updateStatistics();
+            clearForm();
+            showAlert('تم إضافة الطلب بنجاح!', 'success');
+        }
+
+        function deleteOrder(id) {
+            if (confirm('هل أنت متأكد من حذف هذا الطلب؟')) {
+                orders = orders.filter(order => order.id !== id);
+                saveOrdersForDate(currentDate);
+                updateTable();
+                updateStatistics();
+                showAlert('تم حذف الطلب بنجاح!', 'success');
+            }
+        }
+
+        function updateTable() {
+            const tbody = document.getElementById('ordersTableBody');
+            
+            if (orders.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="12" class="empty-state">
+                            <div style="font-size: 3em; margin-bottom: 20px;">📝</div>
+                            <h3>لا توجد طلبات لهذا التاريخ</h3>
+                            <p>ابدأ بإضافة طلب جديد من النموذج أعلاه</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = orders.map(order => `
+                <tr>
+                    <td>${order.orderCode}</td>
+                    <td>${order.customerName}</td>
+                    <td>${order.phoneNumber}</td>
+                    <td>${order.orderValue.toFixed(2)} جنيه</td>
+                    <td>${order.depositValue.toFixed(2)} جنيه</td>
+                    <td>${(order.orderValue - order.depositValue).toFixed(2)} جنيه</td>
+                    <td>
+                        <span class="payment-method ${order.paymentMethod}">
+                            ${order.paymentMethod === 'vodafone' ? 'فودافون كاش' : 'انستا باي'}
+                        </span>
+                    </td>
+                    <td>${order.fromNumber}</td>
+                    <td>${order.toNumber}</td>
+                    <td>${new Date(order.addedDate).toLocaleDateString('ar-EG')}</td>
+                    <td>${order.addedTime}</td>
+                    <td>
+                        <button class="delete-btn" onclick="deleteOrder(${order.id})">🗑️ حذف</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateStatistics() {
+            const totalOrders = orders.length;
+            const totalValue = orders.reduce((sum, order) => sum + order.orderValue, 0);
+            const totalDeposits = orders.reduce((sum, order) => sum + order.depositValue, 0);
+            const totalRemaining = totalValue - totalDeposits;
+
+            document.getElementById('totalOrders').textContent = totalOrders;
+            document.getElementById('totalValue').textContent = totalValue.toFixed(2) + ' جنيه';
+            document.getElementById('totalDeposits').textContent = totalDeposits.toFixed(2) + ' جنيه';
+            document.getElementById('totalRemaining').textContent = totalRemaining.toFixed(2) + ' جنيه';
+        }
+
+        function clearForm() {
+            document.getElementById('orderForm').reset();
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alertMessage');
+            alertDiv.innerHTML = `
+                <div class="alert alert-${type === 'error' ? 'error' : 'success'}">
+                    ${message}
+                </div>
+            `;
+            
+            setTimeout(() => {
+                alertDiv.innerHTML = '';
+            }, 5000);
+        }
+
+        function showHistory() {
+            const modal = document.getElementById('historyModal');
+            const content = document.getElementById('historyContent');
+            
+            // Get all saved dates
+            const allDates = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('orders_')) {
+                    const date = key.replace('orders_', '');
+                    const ordersData = JSON.parse(localStorage.getItem(key));
+                    if (ordersData && ordersData.length > 0) {
+                        allDates.push({
+                            date: date,
+                            orders: ordersData
+                        });
+                    }
+                }
+            }
+
+            if (allDates.length === 0) {
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 3em; margin-bottom: 20px;">📅</div>
+                        <h3>لا توجد بيانات محفوظة</h3>
+                        <p>ابدأ بإضافة بعض الطلبات وسيتم حفظها تلقائياً</p>
+                    </div>
+                `;
+            } else {
+                content.innerHTML = allDates.sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .map(dateData => {
+                        const totalOrders = dateData.orders.length;
+                        const totalValue = dateData.orders.reduce((sum, order) => sum + order.orderValue, 0);
+                        const totalDeposits = dateData.orders.reduce((sum, order) => sum + order.depositValue, 0);
+                        const totalRemaining = totalValue - totalDeposits;
+                        
+                        return `
+                            <div class="history-item">
+                                <div class="history-date">
+                                    📅 ${new Date(dateData.date + 'T00:00:00').toLocaleDateString('ar-EG', { 
+                                        year: 'numeric', 
+                                        month: 'long', 
+                                        day: 'numeric',
+                                        weekday: 'long'
+                                    })}
+                                </div>
+                                <div class="history-stats">
+                                    <div class="history-stat">
+                                        <strong>${totalOrders}</strong><br>
+                                        الطلبات
+                                    </div>
+                                    <div class="history-stat">
+                                        <strong>${totalValue.toFixed(2)}</strong><br>
+                                        إجمالي القيمة
+                                    </div>
+                                    <div class="history-stat">
+                                        <strong>${totalDeposits.toFixed(2)}</strong><br>
+                                        الدفعات المقدمة
+                                    </div>
+                                    <div class="history-stat">
+                                        <strong>${totalRemaining.toFixed(2)}</strong><br>
+                                        المتبقي
+                                    </div>
+                                </div>
+                                <div style="margin-top: 15px;">
+                                    <button class="btn btn-success" onclick="loadDate('${dateData.date}')">📂 تحميل</button>
+                                    <button class="btn btn-danger" onclick="deleteDate('${dateData.date}')">🗑️ حذف</button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        function closeHistory() {
+            document.getElementById('historyModal').style.display = 'none';
+        }
+
+        function loadDate(date) {
+            currentDate = date;
+            document.getElementById('selectedDate').value = date;
+            updateCurrentDateDisplay();
+            loadOrdersForDate(date);
+            closeHistory();
+            showAlert(`تم تحميل بيانات ${new Date(date + 'T00:00:00').toLocaleDateString('ar-EG')}`, 'success');
+        }
+
+        function deleteDate(date) {
+            if (confirm(`هل أنت متأكد من حذف بيانات ${new Date(date + 'T00:00:00').toLocaleDateString('ar-EG')}؟`)) {
+                localStorage.removeItem(`orders_${date}`);
+                showHistory(); // Refresh the modal
+                showAlert('تم حذف البيانات بنجاح!', 'success');
+            }
+        }
+
+        function clearAllHistory() {
+            if (confirm('هل أنت متأكد من حذف جميع البيانات المحفوظة؟ هذا الإجراء لا يمكن التراجع عنه!')) {
+                const keysToDelete = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith('orders_')) {
+                        keysToDelete.push(key);
+                    }
+                }
+                
+                keysToDelete.forEach(key => localStorage.removeKey(key));
+                
+                // Reset current view
+                orders = [];
+                updateTable();
+                updateStatistics();
+                closeHistory();
+                showAlert('تم حذف جميع البيانات بنجاح!', 'success');
+            }
+        }
+
+        function exportData() {
+            if (orders.length === 0) {
+                showAlert('لا توجد بيانات للتصدير!', 'error');
+                return;
+            }
+
+            // Create CSV data
+            const headers = ['كود الأوردر', 'اسم العميل', 'رقم التليفون', 'قيمة الأوردر', 'قيمة الديبوزيت', 'المبلغ المتبقي', 'طريقة الدفع', 'الرقم المحول منه', 'الرقم المحول إليه', 'تاريخ الإضافة', 'وقت الإضافة'];
+            
+            const csvData = orders.map(order => [
+                order.orderCode,
+                order.customerName,
+                order.phoneNumber,
+                order.orderValue,
+                order.depositValue,
+                order.orderValue - order.depositValue,
+                order.paymentMethod === 'vodafone' ? 'فودافون كاش' : 'انستا باي',
+                order.fromNumber,
+                order.toNumber,
+                order.addedDate,
+                order.addedTime
+            ]);
+
+            // Convert to CSV format
+            const csvContent = '\uFEFF' + [headers, ...csvData].map(row => 
+                row.map(field => `"${field}"`).join(',')
+            ).join('\n');
+
+            // Download CSV
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `deposit_sheet_${currentDate}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showAlert('تم تصدير البيانات بنجاح!', 'success');
+        }
+
+        function printReport() {
+            const printWindow = window.open('', '_blank');
+            const totalOrders = orders.length;
+            const totalValue = orders.reduce((sum, order) => sum + order.orderValue, 0);
+            const totalDeposits = orders.reduce((sum, order) => sum + order.depositValue, 0);
+            const totalRemaining = totalValue - totalDeposits;
+
+            const printContent = `
+                <!DOCTYPE html>
+                <html lang="ar" dir="rtl">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>تقرير الديبوزيت - ${currentDate}</title>
+                    <style>
+                        body { 
+                            font-family: Arial, sans-serif; 
+                            direction: rtl; 
+                            margin: 20px;
+                            background: white;
+                        }
+                        .header { 
+                            text-align: center; 
+                            margin-bottom: 30px;
+                            border-bottom: 3px solid #1e6b30;
+                            padding-bottom: 20px;
+                        }
+                        .header h1 {
+                            color: #1e6b30;
+                            font-size: 2em;
+                            margin-bottom: 10px;
+                        }
+                        .date-info {
+                            color: #666;
+                            font-size: 1.2em;
+                        }
+                        .stats { 
+                            display: flex; 
+                            justify-content: space-around; 
+                            margin-bottom: 30px;
+                            flex-wrap: wrap;
+                        }
+                        .stat { 
+                            text-align: center; 
+                            padding: 15px; 
+                            border: 2px solid #1e6b30; 
+                            border-radius: 10px;
+                            margin: 5px;
+                            min-width: 200px;
+                            background: #f0f8f0;
+                        }
+                        .stat-number {
+                            font-size: 1.5em;
+                            font-weight: bold;
+                            color: #1e6b30;
+                        }
+                        .stat-label {
+                            color: #666;
+                            margin-top: 5px;
+                        }
+                        table { 
+                            width: 100%; 
+                            border-collapse: collapse; 
+                            margin-top: 20px;
+                            font-size: 14px;
+                        }
+                        th, td { 
+                            border: 1px solid #ddd; 
+                            padding: 8px; 
+                            text-align: center;
+                        }
+                        th { 
+                            background-color: #1e6b30; 
+                            color: white;
+                            font-weight: bold;
+                        }
+                        tr:nth-child(even) {
+                            background-color: #f0f8f0;
+                        }
+                        .vodafone { 
+                            background: #e74c3c; 
+                            color: white; 
+                            padding: 3px 8px; 
+                            border-radius: 10px;
+                            font-size: 12px;
+                        }
+                        .instapay { 
+                            background: #1e6b30; 
+                            color: white; 
+                            padding: 3px 8px; 
+                            border-radius: 10px;
+                            font-size: 12px;
+                        }
+                        .footer {
+                            margin-top: 30px;
+                            text-align: center;
+                            color: #666;
+                            border-top: 1px solid #ddd;
+                            padding-top: 20px;
+                        }
+                        @media print {
+                            body { margin: 0; }
+                            .stats { page-break-inside: avoid; }
+                            table { page-break-inside: auto; }
+                            tr { page-break-inside: avoid; page-break-after: auto; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>📊 تقرير إدارة الديبوزيت</h1>
+                        <div class="date-info">
+                            التاريخ: ${new Date(currentDate + 'T00:00:00').toLocaleDateString('ar-EG', { 
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric',
+                                weekday: 'long'
+                            })}
+                        </div>
+                    </div>
+                    
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-number">${totalOrders}</div>
+                            <div class="stat-label">إجمالي الطلبات</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">${totalValue.toFixed(2)} جنيه</div>
+                            <div class="stat-label">إجمالي قيمة الأوردرات</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">${totalDeposits.toFixed(2)} جنيه</div>
+                            <div class="stat-label">إجمالي الدفعات المقدمة</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">${totalRemaining.toFixed(2)} جنيه</div>
+                            <div class="stat-label">المبلغ المتبقي</div>
+                        </div>
+                    </div>
+                    
+                    ${orders.length > 0 ? `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>كود الأوردر</th>
+                                <th>اسم العميل</th>
+                                <th>رقم التليفون</th>
+                                <th>قيمة الأوردر</th>
+                                <th>قيمة الديبوزيت</th>
+                                <th>المبلغ المتبقي</th>
+                                <th>طريقة الدفع</th>
+                                <th>الرقم المحول منه</th>
+                                <th>الرقم المحول إليه</th>
+                                <th>وقت الإضافة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${orders.map(order => `
+                                <tr>
+                                    <td>${order.orderCode}</td>
+                                    <td>${order.customerName}</td>
+                                    <td>${order.phoneNumber}</td>
+                                    <td>${order.orderValue.toFixed(2)} جنيه</td>
+                                    <td>${order.depositValue.toFixed(2)} جنيه</td>
+                                    <td>${(order.orderValue - order.depositValue).toFixed(2)} جنيه</td>
+                                    <td>
+                                        <span class="${order.paymentMethod}">
+                                            ${order.paymentMethod === 'vodafone' ? 'فودافون كاش' : 'انستا باي'}
+                                        </span>
+                                    </td>
+                                    <td>${order.fromNumber}</td>
+                                    <td>${order.toNumber}</td>
+                                    <td>${order.addedTime}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    ` : '<div style="text-align: center; padding: 50px; color: #666;"><h3>لا توجد طلبات لهذا التاريخ</h3></div>'}
+                    
+                    <div class="footer">
+                        <p>تم إنشاء هذا التقرير في: ${new Date().toLocaleString('ar-EG')}</p>
+                        <p>نظام إدارة الديبوزيت - جميع الحقوق محفوظة</p>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.focus();
+            
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 250);
+
+            showAlert('تم إعداد التقرير للطباعة!', 'success');
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('historyModal');
+            if (event.target == modal) {
+                closeHistory();
+            }
+        }
+    </script>
+</body>
+</html>
+
